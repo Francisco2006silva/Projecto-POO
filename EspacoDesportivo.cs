@@ -5,37 +5,58 @@ namespace GestaoEspacosDesportivos
 {
     public class EspacoDesportivo
     {
+        // Atributos do diagrama (todos privados: "-")
+        private int id;
+        private string nome;
+        private string tipo;
+        private string localizacao;
+        private int capacidadeMaxima;
+        private bool disponivel;
+
+        // Agregação "possui": 1 EspacoDesportivo -> 0..* Equipamento
         private readonly List<Equipamento> equipamentos = new List<Equipamento>();
+
+        // Associação "recebe": 1 EspacoDesportivo -> 0..* Reserva
         private readonly List<Reserva> reservas = new List<Reserva>();
 
-        public int Id { get; private set; }
-        public string Nome { get; set; }
-        public string Tipo { get; set; }
-        public string Localizacao { get; set; }
-        public int CapacidadeMaxima { get; set; }
-        public bool Disponivel { get; set; }
-
-        // "possui" (agregação) e "recebe"
+        // Acesso de leitura aos atributos (as listas não podem ser alteradas de fora)
+        public int Id => id;
+        public string Nome => nome;
+        public string Tipo => tipo;
+        public string Localizacao => localizacao;
+        public int CapacidadeMaxima => capacidadeMaxima;
+        public bool Disponivel => disponivel;
         public IReadOnlyList<Equipamento> Equipamentos => equipamentos;
         public IReadOnlyList<Reserva> Reservas => reservas;
 
         public EspacoDesportivo(int id, string nome, string tipo, string localizacao, int capacidadeMaxima)
         {
-            Id = id;
-            Nome = nome;
-            Tipo = tipo;
-            Localizacao = localizacao;
-            CapacidadeMaxima = capacidadeMaxima;
-            Disponivel = true;
+            this.id = id;
+            this.nome = nome;
+            this.tipo = tipo;
+            this.localizacao = localizacao;
+            this.capacidadeMaxima = capacidadeMaxima;
+            this.disponivel = true;
         }
 
-        public void AdicionarEquipamento(Equipamento equipamento) => equipamentos.Add(equipamento);
+        // Métodos de apoio às associações (não estão no diagrama, mas são necessários
+        // porque as listas são privadas)
+        public void AdicionarEquipamento(Equipamento equipamento)
+        {
+            if (equipamento == null) throw new ArgumentNullException(nameof(equipamento));
+            equipamentos.Add(equipamento);
+        }
 
-        public void AdicionarReserva(Reserva reserva) => reservas.Add(reserva);
+        public void AdicionarReserva(Reserva reserva)
+        {
+            if (reserva == null) throw new ArgumentNullException(nameof(reserva));
+            if (!reservas.Contains(reserva)) reservas.Add(reserva);
+        }
 
+        // +verificarDisponibilidade(data: Date, inicio: Time, fim: Time): bool
         public bool VerificarDisponibilidade(DateTime data, TimeSpan inicio, TimeSpan fim)
         {
-            if (!Disponivel) return false;
+            if (!disponivel) return false;
             if (fim <= inicio) return false;
 
             foreach (Reserva r in reservas)
