@@ -5,9 +5,9 @@ namespace GestaoEspacosDesportivos
     public class Equipamento
     {
         private int id;
-        private string nome;
+        private string nomeEquipamento = string.Empty;
         private int quantidadeDisponivel;
-        private string estado;
+        private string estado = "Disponível";
 
         public void AtualizarQuantidade(int quantidade)
         {

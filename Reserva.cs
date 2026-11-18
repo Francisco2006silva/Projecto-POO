@@ -5,6 +5,7 @@ namespace GestaoEspacosDesportivos
     public class Reserva
     {
         private static int proximoId = 1;
+        private static readonly TimeSpan DuracaoDia = TimeSpan.FromDays(1);
 
         public int Id { get; private set; }
         public DateTime Data { get; private set; }
@@ -18,9 +19,22 @@ namespace GestaoEspacosDesportivos
 
         public bool EstaAtiva => Estado == EstadoReserva.Pendente || Estado == EstadoReserva.Confirmada;
 
+        internal static bool HorarioValido(TimeSpan horaInicio, TimeSpan horaFim)
+        {
+            return horaInicio >= TimeSpan.Zero
+                && horaInicio < DuracaoDia
+                && horaFim > horaInicio
+                && horaFim < DuracaoDia;
+        }
+
         public Reserva(UtilizadorNormal utilizador, EspacoDesportivo espaco,
                        DateTime data, TimeSpan horaInicio, TimeSpan horaFim)
         {
+            ArgumentNullException.ThrowIfNull(utilizador);
+            ArgumentNullException.ThrowIfNull(espaco);
+            if (!HorarioValido(horaInicio, horaFim))
+                throw new ArgumentException("O horário deve estar dentro do mesmo dia e a hora final deve ser posterior à inicial.");
+
             Id = proximoId++;
             Utilizador = utilizador;
             Espaco = espaco;

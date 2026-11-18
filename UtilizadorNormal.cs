@@ -15,6 +15,7 @@ namespace GestaoEspacosDesportivos
         // Devolve null se o espaço não estiver disponível nesse horário
         public Reserva? CriarReserva(EspacoDesportivo espaco, DateTime data, TimeSpan inicio, TimeSpan fim)
         {
+            ArgumentNullException.ThrowIfNull(espaco);
             if (!espaco.VerificarDisponibilidade(data, inicio, fim))
                 return null;
 

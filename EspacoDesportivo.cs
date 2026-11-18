@@ -53,11 +53,16 @@ namespace GestaoEspacosDesportivos
             if (!reservas.Contains(reserva)) reservas.Add(reserva);
         }
 
+        public void AtualizarDisponibilidade(bool disponivel)
+        {
+            this.disponivel = disponivel;
+        }
+
         // +verificarDisponibilidade(data: Date, inicio: Time, fim: Time): bool
         public bool VerificarDisponibilidade(DateTime data, TimeSpan inicio, TimeSpan fim)
         {
             if (!disponivel) return false;
-            if (fim <= inicio) return false;
+            if (!Reserva.HorarioValido(inicio, fim)) return false;
 
             foreach (Reserva r in reservas)
             {
